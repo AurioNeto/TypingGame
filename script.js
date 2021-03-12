@@ -14,6 +14,12 @@ let startTime = Date.now();
 let actualScore;
 let actualTime;
 let quoteCoef = [98, 53, 170, 57, 45, 65, 88]; 
+let state = 0;
+
+const quoteElement = document.getElementById('quote');
+const messageElement = document.getElementById('message');
+const typedValueElement = document.getElementById('typed-value');
+const modalHidder = document.getElementById('modal');
 
 function setScore() {
   let coef = quoteCoef[coefIndex];
@@ -21,12 +27,18 @@ function setScore() {
   return score;
 };
 
-const quoteElement = document.getElementById('quote');
-const messageElement = document.getElementById('message');
-const typedValueElement = document.getElementById('typed-value');
-const modalHidder = document.getElementById('modal');
+function closeModal() {
+  if (modalHidder.className === 'modal'){
+    modalHidder.className = 'modal hidden';
+    typedValueElement.value = '';
+    typedValueElement.setAttribute("disabled", "disabled");
+    quoteElement.innerHTML = '';
+    state = 0;
+  }
+};
 
-document.getElementById('start').addEventListener('click', () => {
+function startGame() {
+  state = 1;
   const quoteIndex = Math.floor(Math.random() * quotes.length);
   coefIndex = quoteIndex;
   const quote = quotes[quoteIndex];
@@ -47,7 +59,15 @@ document.getElementById('start').addEventListener('click', () => {
   typedValueElement.removeAttribute("disabled", "disabled");
   typedValueElement.focus();
   startTime = new Date().getTime();
+}
+
+document.addEventListener('keydown', (e)=>{ 
+  if (e.key == 'Enter' && state === 0) {
+    startGame();
+  }
 });
+
+document.getElementById('start').addEventListener('click', startGame);
 
 typedValueElement.addEventListener('input', () => {
   const currentWord = words[wordIndex];
@@ -75,15 +95,6 @@ typedValueElement.addEventListener('input', () => {
      typedValueElement.className = 'error';
   }
 });
-
-function closeModal() {
-  if (modalHidder.className === 'modal'){
-    modalHidder.className = 'modal hidden';
-    typedValueElement.value = '';
-    typedValueElement.setAttribute("disabled", "disabled");
-    quoteElement.innerHTML = '';
-  }
-};
 
 modalHidder.addEventListener('click', closeModal);
 document.addEventListener('keydown', (e)=>{ 
